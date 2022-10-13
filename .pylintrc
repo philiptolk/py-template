@@ -1,0 +1,10 @@
+[MASTER]
+init-hook='import sys; sys.path.append("./src")'
+ignore=test
+
+[MESSAGES CONTROL]
+disable=missing-docstring,
+        unused-argument
+
+[FORMAT]
+ignore-long-lines=y

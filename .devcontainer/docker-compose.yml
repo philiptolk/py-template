@@ -1,0 +1,50 @@
+version: '3'
+
+services:
+  localstack:
+    container_name: "${LOCALSTACK_DOCKER_NAME-localstack}"
+    hostname: localstack
+    image: localstack/localstack:latest
+    ports:
+      - "127.0.0.1:4566:4566"            # LocalStack Gateway
+      - "127.0.0.1:4510-4559:4510-4559"  # external services port range
+      # - "127.0.0.1:53:53"                # DNS config (only required for Pro)
+      # - "127.0.0.1:53:53/udp"            # DNS config (only required for Pro)
+      # - "127.0.0.1:443:443"              # LocalStack HTTPS Gateway (only required for Pro)
+      # - "9200:4571" # elasticsearch port forward
+      # - "8080:8080" # WebUI port forward
+    environment:
+      - SERVICES=s3,lambda,logs,dynamodb,sns,sqs,sts,cloudwatch,rds,route53
+      - DEBUG=1
+      - START_WEB=0
+      - LAMBDA_REMOTE_DOCKER=0
+      - DATA_DIR=/tmp/localstack/data
+      - DEFAULT_REGION=us-west-2
+      - SKIP_INFRA_DOWNLOADS=true
+      - DOCKER_HOST=unix:///var/run/docker.sock
+      - PERSISTENCE=${PERSISTENCE-}
+      - LAMBDA_EXECUTOR=${LAMBDA_EXECUTOR-}
+      - LOCALSTACK_API_KEY=${LOCALSTACK_API_KEY-}  # only required for Pro    
+    volumes:
+      - "${LOCALSTACK_VOLUME_DIR:-./volume}:/var/lib/localstack"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - ./persistence/localstack:/tmp/localstack
+  app:
+    # Using a Dockerfile is optional, but included for completeness.
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - LOCALSTACK_HOST=localstack
+
+    volumes:
+      # This is where VS Code should expect to find your project's source code and the value of "workspaceFolder" in .devcontainer/devcontainer.json
+      - ..:/workspace:cached
+      # map ssh if you are going to use git inside container and dont use ssh-agent
+      - ~/.ssh:/root/.ssh
+      # Uncomment the next line to use Docker from inside the container. See https://aka.ms/vscode-remote/samples/docker-from-docker-compose for details.
+      - /var/run/docker.sock:/var/run/docker.sock 
+
+    # Overrides default command so things don't shut down after the process ends.
+    command: /bin/sh -c "while sleep 1000; do :; done"  
+

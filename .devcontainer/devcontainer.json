@@ -1,0 +1,39 @@
+{
+	"name": "Your Definition Name Here (Community)",
+
+	// Update the 'dockerComposeFile' list if you have more compose files or use different names.
+	"dockerComposeFile": "docker-compose.yml",
+
+	// The 'service' property is the name of the service for the container that VS Code should
+	// use. Update this value and .devcontainer/docker-compose.yml to the real service name.
+	"service": "app",
+
+	// The 'workspaceFolder' property is the path VS Code should open by default when
+	// connected. Corresponds to a volume mount in .devcontainer/docker-compose.yml
+	"workspaceFolder": "/workspace",
+
+	// Uncomment the next line to use 'postCreateCommand' to run commands after the container is created.
+	"postCreateCommand": "/workspace/bin/init_s3_test.sh && /workspace/bin/tf_workspaces.sh",
+
+	"customizations": {
+		// Configure properties specific to VS Code.
+		"vscode": {
+			// Set *default* container specific settings.json values on container create.
+			// "settings": { 
+			// 	"resmon.show.battery": false,
+			// 	"resmon.show.cpufreq": false
+			// },			
+			// Add the IDs of extensions you want installed when the container is created.
+			"extensions": [
+				"amazonwebservices.aws-toolkit-vscode",
+				"eamodio.gitlens",
+				"ms-azuretools.vscode-docker",
+				"hashicorp.terraform",
+				"ms-kubernetes-tools.vscode-kubernetes-tools",
+				"ms-python.python",
+				"ms-python.vscode-pylance",
+				"GitHub.copilot-nightly"
+			]
+		}
+	},
+}
